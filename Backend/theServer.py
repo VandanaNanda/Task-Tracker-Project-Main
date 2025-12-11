@@ -19,8 +19,8 @@ CORS(app,
 DB_CONFIG = {
     'host':'localhost',
     'user':'root',
-    'password':'V07@Feb$&2006',
-    'database':'TaskTrackerDatabase'
+    'password':'Password',
+    'database':'DataBase'
 }
 
 # default
@@ -295,7 +295,7 @@ def AiAnaylsis():
 
     connection.close()
     
-    genai.configure(api_key="AIzaSyB6-RHKw3YkXBOYNvYizCiCf--tbcTPhXE")
+    genai.configure(api_key="APIKEY")
     print('setip complete')
     # for model in genai.list_models():
     #     print(f"Model: {model.name}")
