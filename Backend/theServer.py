@@ -34,7 +34,7 @@ def home():
 def get_task():
     connection = mysql.connector.connect(**DB_CONFIG)
     cursor = connection.cursor(dictionary=True)
-    cursor.execute("SELECT id, task, is_done, streak, created_at FROM task_tracker_app")
+    cursor.execute("SELECT id, task, is_done, streak, created_at FROM DataBase")
     tasks = cursor.fetchall()
     cursor.close()
     connection.close()
@@ -48,11 +48,11 @@ def getOneTask():
     cursor = connection.cursor(dictionary=True)
 
     cursor.execute('''SELECT MAX(id) as max_id
-                        FROM task_tracker_app;''')
+                        FROM DataBase;''')
     data_jason = cursor.fetchone()
     max_id = data_jason['max_id']
     cursor.execute('''
-                select * from task_tracker_app where id = %s;
+                select * from DataBase where id = %s;
                 ''',(max_id,))
     the_task = cursor.fetchone()
     print(the_task)
@@ -68,7 +68,7 @@ def getAnyTask(task_id):
     cursor = connection.cursor(dictionary=True)
 
     cursor.execute('''
-                select * from task_tracker_app where id = %s;
+                select * from DataBase where id = %s;
                 ''',(task_id,))
     the_task = cursor.fetchone()
     print("theTask values:" ,the_task.values)
@@ -88,7 +88,7 @@ def add_task():
         return jsonify({'error':'Task name is required'}),400
     if request.method == 'POST':        
         try:
-            cursor.execute("INSERT INTO task_tracker_app (task) VALUES (%s)",(task,))
+            cursor.execute("INSERT INTO DataBase (task) VALUES (%s)",(task,))
             connection.commit()
             cursor.close() 
             connection.close()           
@@ -113,7 +113,7 @@ def delete_task(task_id):
     connection = mysql.connector.connect(**DB_CONFIG)
     cursor = connection.cursor()
     try:
-        cursor.execute("DELETE FROM task_tracker_app WHERE id = %s", ((task_id,)))
+        cursor.execute("DELETE FROM DataBase WHERE id = %s", ((task_id,)))
         connection.commit()
         cursor.close()
         connection.close()
@@ -139,7 +139,7 @@ def EditTaskItem(task_id):
     
     try:
         cursor.execute('''
-                       UPDATE task_tracker_app SET task = %s WHERE id = %s;
+                       UPDATE DataBase SET task = %s WHERE id = %s;
                        ''',(new_task,task_id))
         connection.commit()
         cursor.close()
@@ -160,7 +160,7 @@ def SetIsDone(task_id):
     cursor = connection.cursor()
     try:
         cursor.execute('''
-                       UPDATE task_tracker_app SET is_done = true WHERE id = %s;
+                       UPDATE DataBase SET is_done = true WHERE id = %s;
                        ''',(task_id,))
         connection.commit()
         cursor.close()
@@ -181,15 +181,15 @@ def setStreak(task_id):
     connection = mysql.connector.connect(**DB_CONFIG)
     cursor = connection.cursor()
     try:
-        cursor.execute('SELECT is_done FROM task_tracker_app WHERE id = %s',(task_id,))
+        cursor.execute('SELECT is_done FROM DataBase WHERE id = %s',(task_id,))
         data = cursor.fetchone()
         print("data",data)
         if data[0] != 0:
-            cursor.execute('SELECT streak FROM task_tracker_app WHERE id = %s',(task_id,))
+            cursor.execute('SELECT streak FROM DataBase WHERE id = %s',(task_id,))
             val = cursor.fetchone()
             streak = val[0] + 1
             print("value: ",val[0])
-            cursor.execute('UPDATE task_tracker_app SET streak = %s WHERE id = %s;',(streak,task_id))
+            cursor.execute('UPDATE DataBase SET streak = %s WHERE id = %s;',(streak,task_id))
             connection.commit()
             print("streak ",streak)
 
@@ -220,7 +220,7 @@ def resetIsDone():
                         ENABLE
                         DO
                         BEGIN
-                            UPDATE task_tracker_app SET is_done = false;
+                            UPDATE DataBase SET is_done = false;
                         END$$
 
                         DELIMITER ;
@@ -256,9 +256,9 @@ def setup_database():
         # the * in **DB_CONFIG unpacks the dictionary into key-value pairs
         connection = mysql.connector.connect(**DB_CONFIG)
         cursor = connection.cursor()
-        # LATER task CHANGE of task_tracker_app
+        # LATER task CHANGE of DataBase
         cursor.execute("""
-                       CREATE TABLE IF NOT EXISTS task_tracker_app (
+                       CREATE TABLE IF NOT EXISTS DataBase (
                            id INT AUTO_INCREMENT PRIMARY KEY,
                            task VARCHAR(100) NOT NULL UNIQUE,
                            is_done BOOLEAN DEFAULT FALSE,
@@ -266,7 +266,7 @@ def setup_database():
                            created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP                           
                        )
                        """)
-        print("✅ Table 'task_tracker_app' created!")
+        print("✅ Table 'DataBase' created!")
         connection.commit()
         cursor.close()
         connection.close()
@@ -287,7 +287,7 @@ def get_db_connection():
 # @app.route('/api/get_remarks',methods=['GET'])    
 def AiAnaylsis(): 
     connection = mysql.connector.connect(**DB_CONFIG)   
-    sql_query = "SELECT * FROM task_tracker_app"  
+    sql_query = "SELECT * FROM DataBase"  
     df = pd.read_sql(sql_query, connection)
     print("Data loaded into Pandas DataFrame successfully.")
     print(df.to_markdown()) 
