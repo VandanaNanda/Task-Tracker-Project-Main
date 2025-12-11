@@ -1,0 +1,12 @@
+# React 
+vite-project-task-tracker copy 2/node_modules/ 
+vite-project-task-tracker copy 2/build/ 
+vite-project-task-tracker copy 2/dist/ 
+ 
+# Flask 
+Backend/venv/ 
+Backend/.venv/ 
+ 
+# Common 
+.env 
+__pycache__/ 
